@@ -10,7 +10,11 @@ from sklearn import neighbors
 from sklearn.model_selection import train_test_split
 from pylmnn.lmnn import LargeMarginNearestNeighbor as LMNN
 
-repetitions_num = 1
+repetitions_num = 50
+euclidean1results = []
+euclidean3results = []
+mahanalobisresults = []
+lmnnresults = []
 
 data_points=[]
 test_points=[]
@@ -54,28 +58,9 @@ for rep in range(0, repetitions_num):
     clf = neighbors.KNeighborsClassifier(3, weights=weights)
     clf.fit(X_train, y_train)
 
-    # Plot the decision boundary. For that, we will assign a color to each
-    # point in the mesh [x_min, x_max]x[y_min, y_max].
-    x_min, x_max = X_train[:, 0].min() - 1, X_train[:, 0].max() + 1
-    y_min, y_max = X_train[:, 1].min() - 1, X_train[:, 1].max() + 1
-    xx, yy = np.meshgrid(np.arange(x_min, x_max, h),
-                         np.arange(y_min, y_max, h))
-    Z = clf.predict(np.c_[xx.ravel(), yy.ravel()])
-
-    # Put the result into a color plot
-    Z = Z.reshape(xx.shape)
-    plt.figure(1)
-    plt.pcolormesh(xx, yy, Z, cmap=cmap_light)
-
-    # Plot also the training points
-    plt.scatter(X_train[:, 0], X_train[:, 1], c=y_train, cmap=cmap_bold,
-                edgecolor='k', s=20)
-    plt.xlim(xx.min(), xx.max())
-    plt.ylim(yy.min(), yy.max())
-    plt.title("3-Class classification Euclidean (k = %i, weights = '%s')"
-              % (n_neighbors, weights))
-
-    print(clf.score(X_test, y_test))
+    acc = clf.score(X_test, y_test)
+    print(acc)
+    euclidean3results.append(acc)
 
     #plt.show()
 
@@ -84,28 +69,9 @@ for rep in range(0, repetitions_num):
     clf = neighbors.KNeighborsClassifier(n_neighbors, weights=weights)
     clf.fit(X_train, y_train)
 
-    # Plot the decision boundary. For that, we will assign a color to each
-    # point in the mesh [x_min, x_max]x[y_min, y_max].
-    x_min, x_max = X_train[:, 0].min() - 1, X_train[:, 0].max() + 1
-    y_min, y_max = X_train[:, 1].min() - 1, X_train[:, 1].max() + 1
-    xx, yy = np.meshgrid(np.arange(x_min, x_max, h),
-                         np.arange(y_min, y_max, h))
-    Z = clf.predict(np.c_[xx.ravel(), yy.ravel()])
-
-    # Put the result into a color plot
-    Z = Z.reshape(xx.shape)
-    plt.figure(2)
-    plt.pcolormesh(xx, yy, Z, cmap=cmap_light)
-
-    # Plot also the training points
-    plt.scatter(X_train[:, 0], X_train[:, 1], c=y_train, cmap=cmap_bold,
-                edgecolor='k', s=20)
-    plt.xlim(xx.min(), xx.max())
-    plt.ylim(yy.min(), yy.max())
-    plt.title("3-Class classification Euclidean (k = %i, weights = '%s')"
-              % (n_neighbors, weights))
-
-    print(clf.score(X_test, y_test))
+    acc = clf.score(X_test, y_test)
+    print(acc)
+    euclidean1results.append(acc)
 
     #plt.show()
 
@@ -114,55 +80,58 @@ for rep in range(0, repetitions_num):
     clf = neighbors.KNeighborsClassifier(n_neighbors, weights=weights, metric='mahalanobis', metric_params={'V': covX})
     clf.fit(X_train, y_train)
 
-    # Plot the decision boundary. For that, we will assign a color to each
-    # point in the mesh [x_min, x_max]x[y_min, y_max].
-    x_min, x_max = X_train[:, 0].min() - 1, X_train[:, 0].max() + 1
-    y_min, y_max = X_train[:, 1].min() - 1, X_train[:, 1].max() + 1
-    xx, yy = np.meshgrid(np.arange(x_min, x_max, h),
-                         np.arange(y_min, y_max, h))
-    Z = clf.predict(np.c_[xx.ravel(), yy.ravel()])
-
-    # Put the result into a color plot
-    Z = Z.reshape(xx.shape)
-    plt.figure(3)
-    plt.pcolormesh(xx, yy, Z, cmap=cmap_light)
-
-    # Plot also the training points
-    plt.scatter(X_train[:, 0], X_train[:, 1], c=y_train, cmap=cmap_bold,
-                edgecolor='k', s=20)
-    plt.xlim(xx.min(), xx.max())
-    plt.ylim(yy.min(), yy.max())
-    plt.title("3-Class classification Mahalanobis (k = %i, weights = '%s')"
-              % (n_neighbors, weights))
-
-    print(clf.score(X_test, y_test))
+    acc = clf.score(X_test, y_test)
+    print(acc)
+    mahanalobisresults.append(acc)
 
 
     # lmnn
     clf = LMNN(n_neighbors=n_neighbors, max_iter=150, n_features_out=X.shape[1])
     clf.fit(X_train, y_train)
 
-    # Plot the decision boundary. For that, we will assign a color to each
-    # point in the mesh [x_min, x_max]x[y_min, y_max].
-    x_min, x_max = X_train[:, 0].min() - 1, X_train[:, 0].max() + 1
-    y_min, y_max = X_train[:, 1].min() - 1, X_train[:, 1].max() + 1
-    xx, yy = np.meshgrid(np.arange(x_min, x_max, h),
-                         np.arange(y_min, y_max, h))
-    Z = clf.predict(np.c_[xx.ravel(), yy.ravel()])
+    acc = clf.score(X_test, y_test)
+    print(acc)
+    lmnnresults.append(acc)
 
-    # Put the result into a color plot
-    Z = Z.reshape(xx.shape)
-    plt.figure(4)
-    plt.pcolormesh(xx, yy, Z, cmap=cmap_light)
 
-    # Plot also the training points
-    plt.scatter(X_train[:, 0], X_train[:, 1], c=y_train, cmap=cmap_bold,
-                edgecolor='k', s=20)
-    plt.xlim(xx.min(), xx.max())
-    plt.ylim(yy.min(), yy.max())
-    plt.title("3-Class classification LMNN (k = %i, weights = '%s')"
-              % (n_neighbors, weights))
+print("Euclidean k=1 std:", np.std(euclidean1results), " mean: ", np.mean(euclidean1results))
+print("Euclidean k=3 std:", np.std(euclidean3results), " mean: ", np.mean(euclidean3results))
+print("Mahanalobis k=1 std:", np.std(mahanalobisresults), " mean: ", np.mean(mahanalobisresults))
+print("LMNN k=1 std:", np.std(lmnnresults), " mean: ", np.mean(lmnnresults))
 
-    print(clf.score(X_test, y_test))
 
-    plt.show()
+# Plot results
+N = 1
+ind = np.arange(N)
+
+width = 0.3
+
+fig, ax = plt.subplots()
+rects1 = ax.bar(ind, np.mean(euclidean1results), width, color='red', yerr=np.std(euclidean1results))
+rects2 = ax.bar(ind+width, np.mean(euclidean3results), width, color='blue', yerr=np.std(euclidean3results))
+rects3 = ax.bar(ind+2*width, np.mean(mahanalobisresults), width, color='green', yerr=np.std(mahanalobisresults))
+rects4 = ax.bar(ind+3*width, np.mean(lmnnresults), width, color='yellow', yerr=np.std(lmnnresults))
+
+ax.set_ylabel('Accuracy of classifiers %')
+ax.set_title('Classifiers accuracy')
+ax.set_xticks(4*ind + width / 2)
+ax.set_xticklabels('P1')
+
+ax.legend((rects1[0], rects2[0], rects3[0], rects4[0]), ('Euclidean k=1', 'Euclidean k=3', 'Mahanalobis k=1', 'LMNN k=1'))
+
+def autolabel(rects):
+    """
+    Attach a text label above each bar displaying its height
+    """
+    for rect in rects:
+        height = rect.get_height()
+        ax.text(rect.get_x() + rect.get_width()/2., 1.05*height,
+                '%d' % int(height),
+                ha='center', va='bottom')
+
+autolabel(rects1)
+autolabel(rects2)
+autolabel(rects3)
+autolabel(rects4)
+
+plt.show()
